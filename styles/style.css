@@ -25,6 +25,7 @@
     box-sizing: border-box;
     background-color: antiquewhite;
     border-radius: 5px;
+    height: 100px;
     cursor: pointer;
 }
 .dropzone{
