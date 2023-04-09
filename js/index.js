@@ -166,7 +166,6 @@ function delete_projeto(item,id_board,coluna){
             board_apagar.setItem(element.item);
             board_apagar.setResponsavel(element.responsavel);
             board_apagar.setStatus(element.status);
-            console.log("Preenchi");
         }
     });
     if(array_boards == null){
@@ -240,6 +239,10 @@ function readBoardProjeto(){
 // Salvando dados no LocalStorage
 let button_save = document.querySelector("#saveItem");
 button_save.addEventListener("click",()=>{
+    if(board.getItem()!=""){
+        board.setResponsavel("");
+        array_boards.push(board);
+    }
     array_boards.forEach(element => {
         if(element.item==""){
             array_boards = array_boards.filter((item)=> item.id !== element.id);
