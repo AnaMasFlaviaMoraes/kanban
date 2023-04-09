@@ -90,3 +90,57 @@ input{
     border-left: none;
     border-right: none;
 }
+
+#painel{
+    background-color: #A80F2E;
+    color: antiquewhite;
+    width: 100px;
+    height: 100px;
+    border-radius: 2px;
+    margin-left: 2px;
+}
+#titulo_painel{
+    text-align: center;
+    font-size: 14px;
+}
+
+#saveItem{
+    margin-left: 7px;
+    margin-top: 10px;
+    background-color: #59d561;
+    align-items: center;
+}
+
+#deleteItem{
+    background-color: #bd1010;
+}
+
+.icone{
+    margin-top: 5px;
+}
+
+#popup, #popup_delete{
+    background-color: #59d561;
+    color: rgb(4, 59, 4);
+    width: 300px;
+    height: 50px;
+    text-align: center;
+    align-items: center;
+    margin-top: 200px;
+    margin-left: -100px;
+    display: none;
+   
+}
+
+p{
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+#popup_delete{
+    background-color: #ce6464;
+    color: rgb(151, 9, 9);
+    width: 300px;
+    height: 60px;
+    align-items: center;
+}

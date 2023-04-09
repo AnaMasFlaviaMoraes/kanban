@@ -1,12 +1,11 @@
 // ===================================== CLASS BOARD ====================================
-let ct = 0;
 class Board{
     constructor(){}
 
-    getCodigos(){
-        return this.codigos;
+    getId(){
+        return this.id;
     }
-    setCodigos(id){
+    setId(id){
         this.id = id;
     }
     setItem(item){
@@ -34,15 +33,20 @@ class Board{
 
 }
 
+class Projeto extends Board{}
+
+class Implementacao extends Board{}
+
+class Teste extends Board{}
+
 // ===================================== CLASS BOARD ====================================
-
-
-let array_boards= new Array();
-let array_implementacao= new Array();
-let array_testes = new Array();
 
 let coluna_projeto = document.querySelector("#projeto");
 let coluna_implementacao = document.querySelector('#implementacao');
+let coluna_teste = document.querySelector("#testes");
+
+let popup_sucesso = document.querySelector("#popup");
+let popup_delete = document.querySelector("#popup_delete");
 
 let item_projeto = document.querySelector("#item_projeto");
 let responsavel_projeto = document.querySelector("#responsavel_projeto");
@@ -50,7 +54,7 @@ let responsavel_projeto = document.querySelector("#responsavel_projeto");
 let id_projeto = 0;
 let input_responsavel = "";
 
-
+//Cria um novo board
 function geraBoard(coluna){
     let div_item = document.createElement("div");
     div_item.setAttribute("class", "item_input");
@@ -62,20 +66,20 @@ function geraBoard(coluna){
     input_item.setAttribute("type","text");
     input_item.setAttribute("class","topico projeto_item");
     input_item.setAttribute("id","item_"+coluna.id);
-    input_item.setAttribute("onchange","addItem"+coluna.id+"(this,"+id_projeto+","+coluna.id+")");
+    input_item.setAttribute("onchange","addItem(this,"+id_projeto+","+coluna.id+")");
     input_item.setAttribute("placeholder","Tarefa");
     input_responsavel = document.createElement("input");
     input_responsavel.setAttribute("type","text");
     input_responsavel.setAttribute("class","topico responsavel");
     input_responsavel.setAttribute("id","responsavel_"+coluna.id);
     input_responsavel.setAttribute("disabled","true");
-    input_responsavel.setAttribute("onchange","addResponsavel"+coluna.id+"(this)");
+    input_responsavel.setAttribute("onchange","addResponsavel(this)");
     input_responsavel.setAttribute("placeholder","Responsável");
 
     let delete_item = document.createElement("span");
     delete_item.setAttribute("class","material-symbols-outlined lixeira");
     delete_item.appendChild(document.createTextNode("delete"));
-    delete_item.setAttribute("onclick","delete_projeto(this.parentNode, "+coluna.id+")");
+    delete_item.setAttribute("onclick","delete_projeto(this.parentNode, "+id_projeto+","+coluna.id+")");
     
     div_item.appendChild(todo);
     div_item.appendChild(input_item);
@@ -90,32 +94,33 @@ function geraBoard(coluna){
     
 }
 
-function geraBoardProjetos(projeto){
-    console.log("entrei")
+// Constroí um board para cada item salvo no LocalStorage
+function readSavedBoards(item_board){
+    console.log("entrei");
     let div_item = document.createElement("div");
     div_item.setAttribute("class", "item_input");
-    div_item.setAttribute("id", "item_input_"+projeto.getStatus()+projeto.getCodigos());
+    div_item.setAttribute("id", "item_input_"+item_board.getStatus()+item_board.getId());
     let todo = document.createElement("h6");
     todo.appendChild(document.createTextNode("TODO"));
     let input_item = document.createElement("input");
     input_item.setAttribute("type","text");
     input_item.setAttribute("class","topico projeto_item");
-    input_item.setAttribute("id","item_"+projeto.getStatus());
-    input_item.setAttribute("value",projeto.getItem());
-    input_item.setAttribute("onchange","addItem"+projeto.getStatus()+"(this,"+projeto.getCodigos()+","+projeto.getStatus()+")");
+    input_item.setAttribute("id","item_"+item_board.getStatus());
+    input_item.setAttribute("value",item_board.getItem());
+    input_item.setAttribute("onchange","addItem(this,"+item_board.getId()+","+item_board.getStatus()+")");
     input_item.setAttribute("placeholder","Tarefa");
     input_responsavel = document.createElement("input");
     input_responsavel.setAttribute("type","text");
     input_responsavel.setAttribute("class","topico responsavel");
-    input_responsavel.setAttribute("id","responsavel_"+projeto.getStatus());
-    input_responsavel.setAttribute("value",projeto.getResponsavel());
-    input_responsavel.setAttribute("onchange","addResponsavel"+projeto.getStatus()+"(this)");
+    input_responsavel.setAttribute("id","responsavel_"+item_board.getStatus());
+    input_responsavel.setAttribute("value",item_board.getResponsavel());
+    input_responsavel.setAttribute("onchange","addResponsavel(this)");
     input_responsavel.setAttribute("placeholder","Responsável");
 
     let delete_item = document.createElement("span");
     delete_item.setAttribute("class","material-symbols-outlined lixeira");
     delete_item.appendChild(document.createTextNode("delete"));
-    delete_item.setAttribute("onclick","delete_projeto(this.parentNode, "+projeto.getStatus()+")");
+    delete_item.setAttribute("onclick","delete_projeto(this.parentNode, "+item_board.getId()+","+item_board.getStatus()+")");
     
     div_item.appendChild(todo);
     div_item.appendChild(input_item);
@@ -125,60 +130,140 @@ function geraBoardProjetos(projeto){
     let div_dropzone = document.createElement("div");
     div_dropzone.setAttribute("class","dropzone");
 
-    coluna_projeto.appendChild(div_item);
-    coluna_projeto.appendChild(div_dropzone);
-}
+    if(item_board.getStatus() == "projeto"){
+        coluna_projeto.appendChild(div_item);
+        coluna_projeto.appendChild(div_dropzone);
+    }
 
-function delete_projeto(item,coluna){
+    if(item_board.getStatus() == "implementacao"){
+        coluna_implementacao.appendChild(div_item);
+        coluna_implementacao.appendChild(div_dropzone);
+    }
+
+    if(item_board.getStatus() == "testes"){
+        coluna_teste.appendChild(div_item);
+        coluna_teste.appendChild(div_dropzone);
+    }
+
+    id_projeto = item_board.getId();   
+    
+}
+let board_apagar;
+function delete_projeto(item,id_board,coluna){
     let coluna_delete = document.getElementById(coluna.id);
+    array_boards.forEach(element => {
+        if(element.id == id_board){
+            if(coluna.id == "projeto"){
+                board_apagar = new Projeto();
+            }
+            if(coluna.id == "implementacao"){
+                board_apagar = new Implementacao();
+            }
+            if(coluna.id == "testes"){
+                board_apagar = new Teste();
+            }
+            board_apagar.setId(element.id);
+            board_apagar.setItem(element.item);
+            board_apagar.setResponsavel(element.responsavel);
+            board_apagar.setStatus(element.status);
+            console.log("Preenchi");
+        }
+    });
+    if(array_boards == null){
+        //não faz nada
+    }else{
+        array_boards = array_boards.filter((item)=> item.id !== (board_apagar.getId()))
+        localStorage.clear();
+        localStorage.boards = JSON.stringify(array_boards);
+        console.log("apaguei o item"); 
+    }
     coluna_delete.removeChild(item);
+    
 }
 
-let board = new Board();
-function addItemprojeto(item,id,status){
+let board;
+function addItem(item,id,status){
+    if(status.id == "projeto"){
+        board = new Projeto();
+    }
+    if(status.id == "implementacao"){
+        board = new Implementacao();
+    }
+    if(status.id == "testes"){
+        board = new Teste();
+    }
     
     let aux = document.querySelector("#responsavel_projeto");
-    board.setCodigos(id);
+    board.setId(id);
     board.setItem(item.value);
     board.setStatus(status.id);
     input_responsavel.removeAttribute("disabled");
-    aux.addEventListener("onchange",addResponsavelprojeto);
+    input_responsavel.setAttribute("required",true);
+    aux.addEventListener("onchange",addResponsavel);
 }
-// LOCAL STORAGE ESTÁ SALVANDO SEM ITEM E SEM RESPONSÁVEL
-function addResponsavelprojeto(responsavel){
-    board.setResponsavel(responsavel.value);
-    console.log(board.getItem());
 
-    if(localStorage.boards){
-        array_boards = JSON.parse(localStorage.getItem('boards'));
+let array_boards = new Array();
+
+function addResponsavel(responsavel){
+    board.setResponsavel(responsavel.value);
+    if(board.getResponsavel()!="" && board.getItem()!=""){
+        array_boards.push(board);
+        localStorage.boards = JSON.stringify(array_boards);
     }
-    array_boards.push(board);
-    localStorage.boards = JSON.stringify(array_boards);
 }
 
 coluna_projeto.addEventListener("load", readBoardProjeto);
 
-function readBoardProjeto(e){
-    console.log("entrando na função")
+function readBoardProjeto(){
     if(localStorage.boards){
         array_boards = JSON.parse(localStorage.getItem('boards'));
-        console.log("entrei no localstorage" + array_boards);
         array_boards.forEach(element => {
-            let novo_board = new Board();
-            console.log("Element: "+element.item);
-            novo_board.setCodigos(element.id);
+            let novo_board;
+            if(element.status == "projeto"){
+                novo_board = new Projeto();
+            }
+            if(element.status == "implementacao"){
+                novo_board = new Implementacao();
+            }
+            if(element.status == "testes"){
+                novo_board = new Teste();
+            }
+
+            novo_board.setId(element.id);
             novo_board.setItem(element.item);
             novo_board.setResponsavel(element.responsavel);
             novo_board.setStatus(element.status);
-            console.log(novo_board.getStatus());
-            if(novo_board.getStatus() == "projeto"){
-                geraBoardProjetos(novo_board);
-            }
+            readSavedBoards(novo_board);
         });
-        }
-
-    
+    }  
 }
+// Salvando dados no LocalStorage
+let button_save = document.querySelector("#saveItem");
+button_save.addEventListener("click",()=>{
+    array_boards.forEach(element => {
+        if(element.item==""){
+            array_boards = array_boards.filter((item)=> item.id !== element.id);
+        }
+    });
+    
+    localStorage.boards = JSON.stringify(array_boards);
+    popup_sucesso.style.display = "block";
+    setTimeout(() => {
+        popup_sucesso.style.display = "none";
+    }, 3000);
+});
+
+//Apagando todas as informações do LocalStorage
+let button_deleteAll = document.querySelector("#deleteItem");
+button_deleteAll.addEventListener("click",()=>{
+    localStorage.clear();
+    popup_delete.style.display = "block";
+    setTimeout(() => {
+        popup_delete.style.display = "none";
+        window.location.href = '../pages/index.html'
+    }, 3000);
+});
+
 
 
 

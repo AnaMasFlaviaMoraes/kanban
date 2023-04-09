@@ -10,6 +10,17 @@
     <title>Kanban</title>
 </head>
 <body onload="readBoardProjeto()">
+    <div id="painel">
+        <h6 id="titulo_painel">Painel</h6>
+        <button id="saveItem"><span class="material-symbols-outlined icone" >done_outline</span></button>
+        <button id="deleteItem"><span class="material-symbols-outlined icone">delete_forever</span></button>
+    </div>
+    <div id="popup">
+        <p>Alterações salvas com <strong>sucesso</strong>!</p>
+    </div>
+    <div id="popup_delete">
+        <p>Seu armazenamento foi deletado com <strong>sucesso</strong>!</p>
+    </div>
     <div class="kanban">
         <div class="colunas" >
             <div class="titulo_colunas">Projeto</div>
@@ -51,7 +62,6 @@
             <button class="add_item" type="button" onclick="geraBoard(testes)">Adicionar</button>
         </div>
     </div>
-
     <script src="../js/index.js" ></script>
 </body>
 </html>
