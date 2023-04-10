@@ -54,10 +54,14 @@ let responsavel_projeto = document.querySelector("#responsavel_projeto");
 let id_projeto = 0;
 let input_responsavel = "";
 
+const draggables = document.querySelectorAll("item_input");
+const droppables = document.querySelectorAll("dropzone");
+
 //Cria um novo board
 function geraBoard(coluna){
     let div_item = document.createElement("div");
     div_item.setAttribute("class", "item_input");
+    div_item.setAttribute("draggable","true");
     div_item.setAttribute("id", "item_input_"+coluna.id+id_projeto);
     id_projeto++;
     let todo = document.createElement("h6");
@@ -89,9 +93,22 @@ function geraBoard(coluna){
     let div_dropzone = document.createElement("div");
     div_dropzone.setAttribute("class","dropzone");
 
+    div_item.addEventListener("dragstart", () => {
+        div_item.classList.add("is-dragging");
+    });
+    div_item.addEventListener("dragend", () => {
+        div_item.classList.remove("is-dragging");
+    });
+
     coluna.appendChild(div_item);
     coluna.appendChild(div_dropzone);
     
+    coluna.addEventListener("dragover",(e)=>{
+        e.preventDefault();
+        const item_dragging = document.querySelector(".is-dragging");
+        coluna.appendChild(item_dragging);
+    });
+
 }
 
 // Constroí um board para cada item salvo no LocalStorage
@@ -99,6 +116,7 @@ function readSavedBoards(item_board){
     console.log("entrei");
     let div_item = document.createElement("div");
     div_item.setAttribute("class", "item_input");
+    div_item.setAttribute("draggable","true");
     div_item.setAttribute("id", "item_input_"+item_board.getStatus()+item_board.getId());
     let todo = document.createElement("h6");
     todo.appendChild(document.createTextNode("TODO"));
@@ -127,57 +145,84 @@ function readSavedBoards(item_board){
     div_item.appendChild(input_responsavel);
     div_item.appendChild(delete_item);
 
+    div_item.addEventListener("dragstart", () => {
+        div_item.classList.add("is-dragging");
+    });
+    div_item.addEventListener("dragend", () => {
+        div_item.classList.remove("is-dragging");
+    });
+
     let div_dropzone = document.createElement("div");
     div_dropzone.setAttribute("class","dropzone");
 
     if(item_board.getStatus() == "projeto"){
         coluna_projeto.appendChild(div_item);
         coluna_projeto.appendChild(div_dropzone);
+        coluna_projeto.addEventListener("dragover",(e)=>{
+            e.preventDefault();
+            const item_dragging = document.querySelector(".is-dragging");
+            coluna_projeto.appendChild(item_dragging);
+        });
     }
 
     if(item_board.getStatus() == "implementacao"){
         coluna_implementacao.appendChild(div_item);
         coluna_implementacao.appendChild(div_dropzone);
+        coluna_implementacao.addEventListener("dragover",(e)=>{
+            e.preventDefault();
+            const item_dragging = document.querySelector(".is-dragging");
+            coluna_implementacao.appendChild(item_dragging);
+        });
     }
 
     if(item_board.getStatus() == "testes"){
         coluna_teste.appendChild(div_item);
         coluna_teste.appendChild(div_dropzone);
+        coluna_teste.addEventListener("dragover",(e)=>{
+            e.preventDefault();
+            const item_dragging = document.querySelector(".is-dragging");
+            coluna_teste.appendChild(item_dragging);
+        });
     }
 
     id_projeto = item_board.getId();   
+
+    
     
 }
 let board_apagar;
 function delete_projeto(item,id_board,coluna){
     let coluna_delete = document.getElementById(coluna.id);
-    array_boards.forEach(element => {
-        if(element.id == id_board){
-            if(coluna.id == "projeto"){
-                board_apagar = new Projeto();
-            }
-            if(coluna.id == "implementacao"){
-                board_apagar = new Implementacao();
-            }
-            if(coluna.id == "testes"){
-                board_apagar = new Teste();
-            }
-            board_apagar.setId(element.id);
-            board_apagar.setItem(element.item);
-            board_apagar.setResponsavel(element.responsavel);
-            board_apagar.setStatus(element.status);
-        }
-    });
-    if(array_boards == null){
-        //não faz nada
+    if(item.childNodes[1].value == ""){
+        // não faz nada
     }else{
-        array_boards = array_boards.filter((item)=> item.id !== (board_apagar.getId()))
-        localStorage.clear();
-        localStorage.boards = JSON.stringify(array_boards);
-        console.log("apaguei o item"); 
+        array_boards.forEach(element => {
+            if(element.id == id_board){
+                if(coluna.id == "projeto"){
+                    board_apagar = new Projeto();
+                }
+                if(coluna.id == "implementacao"){
+                    board_apagar = new Implementacao();
+                }
+                if(coluna.id == "testes"){
+                    board_apagar = new Teste();
+                }
+                board_apagar.setId(element.id);
+                board_apagar.setItem(element.item);
+                board_apagar.setResponsavel(element.responsavel);
+                board_apagar.setStatus(element.status);
+            }
+        });
+        if(array_boards == null){
+            //não faz nada
+        }else{
+            array_boards = array_boards.filter((item)=> item.id !== (board_apagar.getId()))
+            localStorage.clear();
+            localStorage.boards = JSON.stringify(array_boards);
+            console.log("apaguei o item"); 
+        }
     }
     coluna_delete.removeChild(item);
-    
 }
 
 let board;
