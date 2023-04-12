@@ -62,7 +62,7 @@ function geraBoard(coluna){
     let div_item = document.createElement("div");
     div_item.setAttribute("class", "item_input");
     div_item.setAttribute("draggable","true");
-    div_item.setAttribute("id", "item_input_"+coluna.id+id_projeto);
+    div_item.setAttribute("id", "item_input_"+coluna.id+"_"+id_projeto);
     id_projeto++;
     let todo = document.createElement("h6");
     todo.appendChild(document.createTextNode("TODO"));
@@ -113,11 +113,10 @@ function geraBoard(coluna){
 
 // Constroí um board para cada item salvo no LocalStorage
 function readSavedBoards(item_board){
-    console.log("entrei");
     let div_item = document.createElement("div");
     div_item.setAttribute("class", "item_input");
     div_item.setAttribute("draggable","true");
-    div_item.setAttribute("id", "item_input_"+item_board.getStatus()+item_board.getId());
+    div_item.setAttribute("id", "item_input_"+item_board.getStatus()+"_"+item_board.getId());
     let todo = document.createElement("h6");
     todo.appendChild(document.createTextNode("TODO"));
     let input_item = document.createElement("input");
@@ -156,12 +155,28 @@ function readSavedBoards(item_board){
     div_dropzone.setAttribute("class","dropzone");
 
     if(item_board.getStatus() == "projeto"){
+        
         coluna_projeto.appendChild(div_item);
         coluna_projeto.appendChild(div_dropzone);
         coluna_projeto.addEventListener("dragover",(e)=>{
             e.preventDefault();
             const item_dragging = document.querySelector(".is-dragging");
+            let coluna_original = item_dragging.id.split("_");
+            let board_drag = new Projeto();
+            array_boards.forEach(element => {
+                if(element.id == coluna_original[3]){
+                    board_drag.setId(element.id);
+                    board_drag.setItem(element.item);
+                    board_drag.setResponsavel(element.responsavel);
+                    board_drag.setStatus("projeto");
+                    array_boards = array_boards.filter((item)=> item.id !== (board_drag.getId()))
+                    localStorage.clear();
+                    array_boards.push(board_drag);
+                    localStorage.boards = JSON.stringify(array_boards);
+                }
+            });
             coluna_projeto.appendChild(item_dragging);
+            window.location.href="../pages/index.html";
         });
     }
 
@@ -171,7 +186,22 @@ function readSavedBoards(item_board){
         coluna_implementacao.addEventListener("dragover",(e)=>{
             e.preventDefault();
             const item_dragging = document.querySelector(".is-dragging");
+            let coluna_original = item_dragging.id.split("_");
+            let board_drag = new Implementacao();
+            array_boards.forEach(element => {
+                if(element.id == coluna_original[3]){
+                    board_drag.setId(element.id);
+                    board_drag.setItem(element.item);
+                    board_drag.setResponsavel(element.responsavel);
+                    board_drag.setStatus("implementacao");
+                    array_boards = array_boards.filter((item)=> item.id !== (board_drag.getId()))
+                    localStorage.clear();
+                    array_boards.push(board_drag);
+                    localStorage.boards = JSON.stringify(array_boards);
+                }
+            });
             coluna_implementacao.appendChild(item_dragging);
+            window.location.href="../pages/index.html";
         });
     }
 
@@ -181,7 +211,22 @@ function readSavedBoards(item_board){
         coluna_teste.addEventListener("dragover",(e)=>{
             e.preventDefault();
             const item_dragging = document.querySelector(".is-dragging");
+            let coluna_original = item_dragging.id.split("_");
+            let board_drag = new Teste();
+            array_boards.forEach(element => {
+                if(element.id == coluna_original[3]){
+                    board_drag.setId(element.id);
+                    board_drag.setItem(element.item);
+                    board_drag.setResponsavel(element.responsavel);
+                    board_drag.setStatus("testes");
+                    array_boards = array_boards.filter((item)=> item.id !== (board_drag.getId()))
+                    localStorage.clear();
+                    array_boards.push(board_drag);
+                    localStorage.boards = JSON.stringify(array_boards);
+                }
+            });
             coluna_teste.appendChild(item_dragging);
+            window.location.href="../pages/index.html";
         });
     }
 
@@ -205,6 +250,7 @@ function delete_projeto(item,id_board,coluna){
                     board_apagar = new Implementacao();
                 }
                 if(coluna.id == "testes"){
+                    console.log("passei aqui");
                     board_apagar = new Teste();
                 }
                 board_apagar.setId(element.id);
@@ -219,7 +265,6 @@ function delete_projeto(item,id_board,coluna){
             array_boards = array_boards.filter((item)=> item.id !== (board_apagar.getId()))
             localStorage.clear();
             localStorage.boards = JSON.stringify(array_boards);
-            console.log("apaguei o item"); 
         }
     }
     coluna_delete.removeChild(item);
@@ -228,6 +273,7 @@ function delete_projeto(item,id_board,coluna){
 let board;
 function addItem(item,id,status){
     if(status.id == "projeto"){
+        console.log("entrei no projeto");
         board = new Projeto();
     }
     if(status.id == "implementacao"){
@@ -253,6 +299,7 @@ function addResponsavel(responsavel){
     if(board.getResponsavel()!="" && board.getItem()!=""){
         array_boards.push(board);
         localStorage.boards = JSON.stringify(array_boards);
+        window.location.href="../pages/index.html";
     }
 }
 
@@ -284,7 +331,10 @@ function readBoardProjeto(){
 // Salvando dados no LocalStorage
 let button_save = document.querySelector("#saveItem");
 button_save.addEventListener("click",()=>{
-    if(board.getItem()!=""){
+    if(board== null){
+        board = new Board();
+    }
+    if((board.getItem()!="") && (board.getResponsavel()=="")){
         board.setResponsavel("");
         array_boards.push(board);
     }
