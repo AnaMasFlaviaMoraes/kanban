@@ -331,10 +331,12 @@ function readBoardProjeto(){
 // Salvando dados no LocalStorage
 let button_save = document.querySelector("#saveItem");
 button_save.addEventListener("click",()=>{
+    console.log(board.getResponsavel())
     if(board== null){
         board = new Board();
     }
-    if((board.getItem()!="") && (board.getResponsavel()=="")){
+    if((board.getItem()!="") && (board.getResponsavel()==undefined)){
+        console.log("entrei");
         board.setResponsavel("");
         array_boards.push(board);
     }
