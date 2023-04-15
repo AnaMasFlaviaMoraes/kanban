@@ -176,7 +176,7 @@ function readSavedBoards(item_board){
                 }
             });
             coluna_projeto.appendChild(item_dragging);
-            window.location.href="../pages/index.html";
+            //window.location.href="../pages/index.html";
         });
     }
 
@@ -201,7 +201,7 @@ function readSavedBoards(item_board){
                 }
             });
             coluna_implementacao.appendChild(item_dragging);
-            window.location.href="../pages/index.html";
+            //window.location.href="../pages/index.html";
         });
     }
 
@@ -226,7 +226,7 @@ function readSavedBoards(item_board){
                 }
             });
             coluna_teste.appendChild(item_dragging);
-            window.location.href="../pages/index.html";
+            //window.location.href="../pages/index.html";
         });
     }
 
